@@ -8,6 +8,8 @@ public class LetterGame {
 
     private char start = randomLetter();
     private ArrayList<Character> required = new ArrayList<>();
+    private int streak = 0;
+    private int points = 0;
 
     public LetterGame() {
         return;
@@ -28,9 +30,9 @@ public class LetterGame {
 
     public String requiredRepr() {
         if (required.isEmpty()) {
-            return "";
+            return "(None)";
         }
-        String repr = " Your word must contain: " + required.getFirst();
+        String repr = "" + required.getFirst();
         for (int i = 1; i < required.size(); i++) {
             repr += ", " + required.get(i);
         }
@@ -39,7 +41,8 @@ public class LetterGame {
 
     public void run() {
         while (required.size() < 5) {
-            System.out.println("Your required starting character is " + start + "." + requiredRepr());
+            System.out.println("Starting Character " + start);
+            System.out.println("Required Characters: " + requiredRepr());
             while (true) {
                 System.out.print("Please enter a word: ");
                 String input = s.nextLine().toUpperCase();
@@ -57,12 +60,22 @@ public class LetterGame {
                     System.out.println("Invalid Word - Not in word list.");
                 } else {
                     // Player passes round
-                    System.out.println("Round passed.");
-                    required.add(start);
+                    streak += 1;
+                    System.out.println("Round passed.\n");
+                    int bonus = streak * 2 - 1;
+                    System.out.print("Current Streak: " + streak + " (+" + bonus + "). End Streak? (Y/N): ");
+                    if (!s.nextLine().equalsIgnoreCase("Y")) {
+                        required.add(start);
+                    } else {
+                        required.clear();
+                        points += streak + bonus;
+                        streak = 0;
+                        System.out.println("You now have " + points + " points!");
+                    }
                     start = randomLetter();
+                    System.out.println();
                     break;
                 }
-                System.out.println();
             }
         }
     }
