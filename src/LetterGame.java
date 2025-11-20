@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,13 +11,19 @@ public class LetterGame {
     private ArrayList<Character> required = new ArrayList<>();
     private int streak = 0;
     private int points = 0;
+    private int reshuffles = 1;
+    private int maxPoints;
 
-    public LetterGame() {
-        return;
+    public LetterGame(int maxPoints) {
+        this.maxPoints = maxPoints;
     }
 
-    public static char randomLetter() {
-        return alphabet.charAt((int) (Math.random() * alphabet.length()));
+    public char randomLetter() {
+        char letter;
+        do {
+            letter = alphabet.charAt((int) (Math.random() * alphabet.length()));
+        } while (required.contains(letter));
+        return letter;
     }
 
     public boolean containsRequired(String word) {
@@ -41,7 +48,7 @@ public class LetterGame {
 
     public void run() {
         while (required.size() < 5) {
-            System.out.println("Starting Character " + start);
+            System.out.println("Starting Character: " + start);
             System.out.println("Required Characters: " + requiredRepr());
             while (true) {
                 System.out.print("Please enter a word: ");
@@ -49,11 +56,20 @@ public class LetterGame {
                 System.out.println();
 
                 if (input.isEmpty()) {
-                    // Player doesn't pass round
+                    System.out.println("Streak ended.");;
+                    required.clear();
+                    start = randomLetter();
+                    points += streak;
+                    streak = 0;
+                    System.out.println("You now have " + points + " points!\n");
                     break;
-                }
-                if (input.charAt(0) != start) {
-                    System.out.println("Invalid Word - Starting Letter is not " + start + ".");
+                } else if (input.equals("*") && reshuffles > 0) {
+                    reshuffles -= 1;
+                    System.out.println("Reselecting starting letter. You have " + reshuffles + " reshuffle(s) remaining.\n");
+                    start = randomLetter();
+                    break;
+                } else if (input.charAt(0) != start) {
+                    System.out.println("Invalid Word - Starting letter is not " + start + ".");
                 } else if (!containsRequired(input)) {
                     System.out.println("Invalid Word - Must include all required letters.");
                 } else if (!validWords.contains(input.toLowerCase())) {
@@ -63,6 +79,7 @@ public class LetterGame {
                     streak += 1;
                     System.out.println("Round passed.\n");
                     int bonus = streak * 2 - 1;
+                    bonus = (streak * (streak + 1)) / 2 - streak;
                     System.out.print("Current Streak: " + streak + " (+" + bonus + "). End Streak? (Y/N): ");
                     if (!s.nextLine().equalsIgnoreCase("Y")) {
                         required.add(start);
