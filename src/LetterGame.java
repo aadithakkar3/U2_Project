@@ -7,23 +7,26 @@ public class LetterGame {
     public static String alphabet = "abcdefghijklmnopqrstuvwxyz".toUpperCase();
     private Scanner s = new Scanner(System.in);
 
-    private char start = randomLetter();
     private ArrayList<Character> required = new ArrayList<>();
+    private char start = randomLetter();
     private int streak = 0;
     private int points = 0;
     private int reshuffles = 1;
     private int maxPoints;
+    private int rounds = 0;
 
     public LetterGame(int maxPoints) {
         this.maxPoints = maxPoints;
     }
 
     public char randomLetter() {
-        char letter;
-        do {
-            letter = alphabet.charAt((int) (Math.random() * alphabet.length()));
-        } while (required.contains(letter));
-        return letter;
+        ArrayList<Character> remaining = new ArrayList<>();
+        for (int i = 0; i < alphabet.length(); i++) {
+            if (!required.contains(alphabet.charAt(i))) {
+                remaining.add(alphabet.charAt(i));
+            }
+        }
+        return remaining.get((int) (Math.random() * remaining.size()));
     }
 
     public boolean containsRequired(String word) {
@@ -47,14 +50,15 @@ public class LetterGame {
     }
 
     public void run() {
-        while (required.size() < 5) {
+        while (points < maxPoints) {
+            rounds += 1;
+            System.out.println("Round " + rounds + ":");
             System.out.println("Starting Character: " + start);
             System.out.println("Required Characters: " + requiredRepr());
             while (true) {
                 System.out.print("Please enter a word: ");
                 String input = s.nextLine().toUpperCase();
                 System.out.println();
-
                 if (input.isEmpty()) {
                     System.out.println("Streak ended.");;
                     required.clear();
@@ -67,6 +71,7 @@ public class LetterGame {
                     reshuffles -= 1;
                     System.out.println("Reselecting starting letter. You have " + reshuffles + " reshuffle(s) remaining.\n");
                     start = randomLetter();
+                    rounds -= 1;
                     break;
                 } else if (input.charAt(0) != start) {
                     System.out.println("Invalid Word - Starting letter is not " + start + ".");
@@ -78,8 +83,11 @@ public class LetterGame {
                     // Player passes round
                     streak += 1;
                     System.out.println("Round passed.\n");
-                    int bonus = streak * 2 - 1;
-                    bonus = (streak * (streak + 1)) / 2 - streak;
+                    int bonus = (streak * (streak + 1)) / 2 - streak;
+                    if (points + streak + bonus >= maxPoints) {
+                        points += streak + bonus;
+                        break;
+                    }
                     System.out.print("Current Streak: " + streak + " (+" + bonus + "). End Streak? (Y/N): ");
                     if (!s.nextLine().equalsIgnoreCase("Y")) {
                         required.add(start);
@@ -95,5 +103,7 @@ public class LetterGame {
                 }
             }
         }
+        System.out.println("You've earned " + points + " points!");
+        System.out.println("You took a total of " + rounds + " rounds.");
     }
 }

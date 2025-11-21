@@ -9,7 +9,7 @@ import java.util.Scanner;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        LetterGame game = new LetterGame(100);
+        LetterGame game = new LetterGame(10);
         game.run();
     }
 
@@ -30,5 +30,3 @@ public class Main {
         }
     }
 }
-
-// 1, 3, 6, 10, 15,
