@@ -9,7 +9,8 @@ import java.util.Scanner;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        LetterGame game = new LetterGame(10);
+        LetterGame game = new LetterGame(25);
+        game.instructions();
         game.run();
     }
 

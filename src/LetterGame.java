@@ -11,7 +11,7 @@ public class LetterGame {
     private char start = randomLetter();
     private int streak = 0;
     private int points = 0;
-    private int reshuffles = 1;
+    private int reshuffles = 2;
     private int maxPoints;
     private int rounds = 0;
 
@@ -49,6 +49,15 @@ public class LetterGame {
         return repr;
     }
 
+    public void instructions() {
+        System.out.println("This is a Letter Game in which the objective is to form English words that meet certain criteria.");
+        System.out.println("Each round, the player is given a random letter and asked to find a word starting with that letter. If they succeed, that letter will be added to a list of required letters that must be used in subsequent rounds.");
+        System.out.println("After any round, the player may choose to 'end their streak, clearing the required list and gaining a sum of points equal to their streak length plus a bonus.");
+        System.out.println("If the player fails to find a word, they may respond '!' to the prompt. Their streak will end, but they gain fewer points than if they had previously ended it.");
+        System.out.println("Twice during the game, the player may enter '*' to reshuffle the chosen starting letter.");
+        System.out.println("Try to reach " + maxPoints + " points in the fewest rounds possible.\n");
+    }
+
     public void run() {
         while (points < maxPoints) {
             rounds += 1;
@@ -60,10 +69,13 @@ public class LetterGame {
                 String input = s.nextLine().toUpperCase();
                 System.out.println();
                 if (input.isEmpty()) {
+                    System.out.println("Invalid. Please enter '!' to end streak or submit a word.");
+                } else if (input.equals("!")) {
                     System.out.println("Streak ended.");;
                     required.clear();
                     start = randomLetter();
-                    points += streak;
+                    int bonus = (streak * (streak + 1)) / 2 - streak;
+                    points += (streak + bonus) / 2;
                     streak = 0;
                     System.out.println("You now have " + points + " points!\n");
                     break;
