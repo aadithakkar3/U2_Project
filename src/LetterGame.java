@@ -52,10 +52,20 @@ public class LetterGame {
     public void instructions() {
         System.out.println("This is a Letter Game in which the objective is to form English words that meet certain criteria.");
         System.out.println("Each round, the player is given a random letter and asked to find a word starting with that letter. If they succeed, that letter will be added to a list of required letters that must be used in subsequent rounds.");
-        System.out.println("After any round, the player may choose to 'end their streak, clearing the required list and gaining a sum of points equal to their streak length plus a bonus.");
+        System.out.println("After any round, the player may choose to 'end their streak,' clearing the required list and gaining a sum of points equal to their streak length plus a bonus.");
         System.out.println("If the player fails to find a word, they may respond '!' to the prompt. Their streak will end, but they gain fewer points than if they had previously ended it.");
         System.out.println("Twice during the game, the player may enter '*' to reshuffle the chosen starting letter.");
         System.out.println("Try to reach " + maxPoints + " points in the fewest rounds possible.\n");
+    }
+
+    public void endStreak(int addedPoints) {
+        points += addedPoints;
+        streak = 0;
+        required.clear();
+        start = randomLetter();
+        if (points < maxPoints) {
+            System.out.println("You now have " + points + " points!");
+        }
     }
 
     public void run() {
@@ -69,17 +79,16 @@ public class LetterGame {
                 String input = s.nextLine().toUpperCase();
                 System.out.println();
                 if (input.isEmpty()) {
-                    System.out.println("Invalid. Please enter '!' to end streak or submit a word.");
+                    // Player enters empty string
+                    System.out.println("Invalid. Please submit a word or enter '!' to end streak.");
                 } else if (input.equals("!")) {
+                    // Player can't find a word - end streak
                     System.out.println("Streak ended.");;
-                    required.clear();
-                    start = randomLetter();
-                    int bonus = (streak * (streak + 1)) / 2 - streak;
-                    points += (streak + bonus) / 2;
-                    streak = 0;
-                    System.out.println("You now have " + points + " points!\n");
+                    endStreak((streak * (streak + 1)) / 4);
+                    System.out.println();
                     break;
                 } else if (input.equals("*") && reshuffles > 0) {
+                    // Player reshuffles letter
                     reshuffles -= 1;
                     System.out.println("Reselecting starting letter. You have " + reshuffles + " reshuffle(s) remaining.\n");
                     start = randomLetter();
@@ -103,13 +112,10 @@ public class LetterGame {
                     System.out.print("Current Streak: " + streak + " (+" + bonus + "). End Streak? (Y/N): ");
                     if (!s.nextLine().equalsIgnoreCase("Y")) {
                         required.add(start);
+                        start = randomLetter();
                     } else {
-                        required.clear();
-                        points += streak + bonus;
-                        streak = 0;
-                        System.out.println("You now have " + points + " points!");
+                        endStreak(streak + bonus);
                     }
-                    start = randomLetter();
                     System.out.println();
                     break;
                 }
